@@ -14,7 +14,7 @@ provider "aws" {
   region = var.region
 }
 
-resource "aws_instance" "servernode" {
+resource "aws_instance" "server" {
   ami                    = "ami-0ecb62995f68bb549"
   instance_type          = "t2.micro"
   key_name               = aws_key_pair.deployer.key_name
@@ -84,6 +84,6 @@ resource "aws_key_pair" "deployer" {
 }
 
 output "instance_public_ip" {
-  value     = aws_instance.servernode.public_ip
+  value     = aws_instance.server.public_ip
   sensitive = true
 }
