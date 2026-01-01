@@ -15,12 +15,10 @@ env:
 jobs:
   deploy-infra:
     runs-on: ubuntu-latest
-    outputs:
-      SERVER_PUBLIC_IP: ${{ steps.set-ip.outputs.instance_public_ip}}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: setup Terraform
+      - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
           terraform_wrapper: false
@@ -30,20 +28,15 @@ jobs:
         working-directory: ./terraform
       - name: Terraform Plan
         id: plan
-        run: |-
-          terraform plan -destroy \
-          -var="region=us-east-1" \
-          -var="public_key=$PUBLIC_SSH_KEY" \
-          -var="private_key=$PRIVATE_SSH_KEY" \
-          -var="key_name=deployer-key" \
-          -out=PLAN
+        run: |
+          terraform plan \
+            -var="region=us-east-1" \
+            -var="public_key=$PUBLIC_SSH_KEY" \
+            -var="private_key=$PRIVATE_SSH_KEY" \
+            -var="key_name=deployer-key" \
+            -out=PLAN
         working-directory: ./terraform
       - name: Terraform Apply
         id: apply
         run: terraform apply PLAN
-        working-directory: ./terraform
-      - name: Set output
-        id: set-ip
-        run: |-
-          echo "::set-output name=instance_public_ip::$(terraform output instance_public_ip)"
         working-directory: ./terraform
