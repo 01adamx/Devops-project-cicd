@@ -14,6 +14,10 @@ provider "aws" {
   region = var.region
 }
 
+data "aws_vpc" "default" {
+  default = true
+}
+
 resource "aws_instance" "server" {
   ami                    = "ami-0ecb62995f68bb549"
   instance_type          = "t3.micro"
@@ -38,6 +42,8 @@ resource "aws_iam_instance_profile" "ec2-profile" {
 }
 
 resource "aws_security_group" "maingroup" {
+  vpc_id = data.aws_vpc.default.id
+  
   egress = [
     {
       cidr_blocks      = ["0.0.0.0/0"]
